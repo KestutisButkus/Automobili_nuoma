@@ -1,30 +1,29 @@
 from django.db import models
 import uuid
 
-
-class Genre(models.Model):
-    types = models.CharField('Pavadinimas', max_length=100, help_text='Įveskite automobilio tipą (pvz. Hečbekas)')
+class Types(models.Model):
+    types = models.CharField('Kėbulo tipas', max_length=200, help_text='Įveskite automobilio kėbulo tipą (pvz. Hečbekas)')
 
     def __str__(self):
         return self.types
 
 
-class Book(models.Model):
-    """Modelis reprezentuoja knygą (bet ne specifinę knygos kopiją)"""
-    title = models.CharField('Pavadinimas', max_length=200)
-    author = models.ForeignKey('Author', on_delete=models.SET_NULL, null=True)
-    summary = models.TextField('Aprašymas', max_length=1000, help_text='Trumpas knygos aprašymas')
-    isbn = models.CharField('ISBN', max_length=13, help_text='13 Simbolių <a href="https://www.isbn-international.org/content/what-isbn">ISBN kodas</a>')
-    genre = models.ManyToManyField(Genre, help_text='Išrinkite žanrą(us) šiai knygai')
+class Car(models.Model):
+    """Modelis reprezentuoja auotomobilį (bet ne kopiją)"""
+    modelis = models.CharField('Modelis', max_length=200)
+    brand = models.ForeignKey('Brand', on_delete=models.SET_NULL, null=True)
+    summary = models.TextField('Aprašymas', max_length=1000, help_text='Trumpas automobilio aprašymas')
+    vin = models.CharField('VIN', max_length=13, help_text='13 Simbolių <a href="https://lt.wikipedia.org/wiki/Automobilio_identifikacinis_kodas">VIN kodas</a>')
+    types = models.ManyToManyField(Types, help_text='Išrinkite kėbulo tipą')
 
     def __str__(self):
-        return self.title
+        return self.modelis
 
 
-class BookInstance(models.Model):
-    """Modelis, aprašantis konkrečios knygos kopijos būseną"""
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text='Unikalus ID knygos kopijai')
-    book = models.ForeignKey('Book', on_delete=models.SET_NULL, null=True)
+class CarInstance(models.Model):
+    """Modelis, aprašantis konkretaus automobilio kopijos būseną"""
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, help_text='Unikalus ID automobilio kopijai')
+    car = models.ForeignKey('Car', on_delete=models.SET_NULL, null=True)
     due_back = models.DateField('Bus prieinama', null=True, blank=True)
 
     LOAN_STATUS = (
@@ -46,16 +45,16 @@ class BookInstance(models.Model):
         ordering = ['due_back']
 
     def __str__(self):
-        return f'{self.id} ({self.book.title})'
+        return f'{self.id} ({self.car.title})'
 
-class Author(models.Model):
-    """Model representing an author."""
-    first_name = models.CharField('Vardas', max_length=100)
-    last_name = models.CharField('Pavardė', max_length=100)
+class Brand(models.Model):
+    """Model: gamintojas, šalis."""
+    model_name = models.CharField('Gamintojas', max_length=100)
+    country = models.CharField('Gamitojo šalis', max_length=100)
 
     class Meta:
-        ordering = ['last_name', 'first_name']
+        ordering = ['country', 'model_name']
 
     def __str__(self):
         """String for representing the Model object."""
-        return f'{self.last_name} {self.first_name}'
+        return f'{self.country} {self.model_name}'
