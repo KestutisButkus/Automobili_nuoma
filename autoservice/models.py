@@ -13,7 +13,7 @@ class Car(models.Model):
     modelis = models.CharField('Modelis', max_length=200)
     brand = models.ForeignKey('Brand', on_delete=models.SET_NULL, null=True)
     summary = models.TextField('Aprašymas', max_length=1000, help_text='Trumpas automobilio aprašymas')
-    vin = models.CharField('VIN', max_length=13, help_text='13 Simbolių <a href="https://lt.wikipedia.org/wiki/Automobilio_identifikacinis_kodas">VIN kodas</a>')
+    vin = models.CharField('VIN', max_length=17, help_text='17 Simbolių <a href="https://lt.wikipedia.org/wiki/Automobilio_identifikacinis_kodas">VIN kodas</a>')
     types = models.ManyToManyField(Types, help_text='Išrinkite kėbulo tipą')
 
     def __str__(self):
